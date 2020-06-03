@@ -12,6 +12,7 @@
 </template>
 
 <script>
+/* eslint-disable no-underscore-dangle */
 import VueTypes from 'vue-types'
 import { mergeListeners, clamp } from './utils'
 
@@ -25,6 +26,7 @@ export default {
         volume: VueTypes.number.def(1),
         muted: VueTypes.bool.def(false),
         managerListeners: VueTypes.object.isRequired,
+        forceTimeUpdateInterval: VueTypes.number.optional,
     },
     computed: {
         mediaListeners () {
@@ -33,15 +35,9 @@ export default {
                     this.$listeners,
                     this.managerListeners,
                 ]),
-                // we need to handle manually timeupdate to avoid circular updates of currentTime due to the watcher
-                timeupdate: (nativeEvent) => {
-                    const time = nativeEvent.target.currentTime
-                    this.selfUpdatedTime = time
-                    this.managerListeners.onTimeUpdate?.(time)
-                    this.$emit('timeupdate', nativeEvent)
-                    if (this.autoplayNeedsToBeHandled === true) {
-                        this.autoplayNeedsToBeHandled = undefined
-                        this.managerListeners.autoplayed?.()
+                timeupdate: (event) => {
+                    if (!this.forceTimeUpdateInterval) {
+                        this._nativeTimeUpdate(event)
                     }
                 },
             }
@@ -56,9 +52,17 @@ export default {
         paused (isPaused) {
             const { mediaRef } = this
             if (!isPaused && mediaRef.paused) {
-                mediaRef.play().catch(() => {})
+                mediaRef.play()
+                    .then(() => {
+                        this.$emit('played', this.mediaRef.currentTime)
+                        this._startforceTimeUpdateInterval()
+                    })
+                    .catch(() => {})
             } else if (isPaused && !mediaRef.paused) {
                 mediaRef.pause()
+                this.$emit('paused', this.mediaRef.currentTime)
+                this._stopforceTimeUpdateInterval()
+                this.forceTimeUpdate()
             }
         },
         volume (level) {
@@ -66,6 +70,10 @@ export default {
         },
         muted (value) {
             this.mediaRef.muted = !!value
+        },
+        forceTimeUpdateInterval (interval) {
+            this._stopforceTimeUpdateInterval()
+            this._startforceTimeUpdateInterval(interval)
         },
     },
     mounted () {
@@ -76,8 +84,37 @@ export default {
         if (this.autoplay) {
             this.autoplayNeedsToBeHandled = true
         }
+        if (this.forceTimeUpdateInterval) {
+            this._startforceTimeUpdateInterval()
+        }
+    },
+    beforeDestroy () {
+        this._stopforceTimeUpdateInterval()
     },
     methods: {
+        // we need to handle manually timeupdate to avoid circular updates of currentTime due to the watcher
+        _nativeTimeUpdate (nativeEvent) {
+            const time = nativeEvent.target.currentTime
+            this.selfUpdatedTime = time
+            this.managerListeners.onTimeUpdate?.(time)
+            this.$emit('timeupdate', nativeEvent)
+            if (this.autoplayNeedsToBeHandled === true) {
+                this.autoplayNeedsToBeHandled = undefined
+                this.managerListeners.autoplayed?.()
+            }
+        },
+        forceTimeUpdate () {
+            // eslint-disable-next-line no-underscore-dangle
+            this._nativeTimeUpdate({ target: { currentTime: this.mediaRef.currentTime } })
+        },
+        _startforceTimeUpdateInterval (interval = this.forceTimeUpdateInterval) {
+            if (this.forceTimeUpdateInterval) {
+                this.interval = setInterval(this.forceTimeUpdate, interval)
+            }
+        },
+        _stopforceTimeUpdateInterval () {
+            clearInterval(this.interval)
+        },
         requestFullScreen () {
             const { mediaRef } = this
             if (mediaRef.webkitRequestFullScreen) mediaRef.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT)

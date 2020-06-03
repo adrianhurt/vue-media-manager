@@ -19,7 +19,7 @@ $ yarn add @adrianhurt/vue-media-manager
 ```vue
 <template>
   <MediaManager
-    #default="{ paused, playPause, mediaAttrs, cursorAttrs }"
+    #default="{ paused, playPause, mediaAttrs, seekSliderAttrs }"
     type="video"
   >
     <div class="video-player">
@@ -34,8 +34,8 @@ $ yarn add @adrianhurt/vue-media-manager
           {{ paused ? 'Play' : 'Pause' }}
         </button>
         <SeekSlider
-          class="media-cursor"
-          v-bind="cursorAttrs"
+          class="media-slider"
+          v-bind="seekSliderAttrs"
         >
           <div class="slider-trail" />
           <div
@@ -69,13 +69,13 @@ export default {
 <style scoped lang="scss">
 @import '~@adrianhurt/vue-media-manager/dist/vue-media-manager.css';
 
-$cursorHeight: 40px;
+$sliderHeight: 40px;
 $sliderTrailHeight: 4px;
 $handleSize: 12px;
 $primary: #4fc08d;
 
-.media-cursor {
-  height: $cursorHeight;
+.media-slider {
+  height: $sliderHeight;
 }
 .slider-trail {
   height: $sliderTrailHeight;
@@ -106,6 +106,15 @@ $primary: #4fc08d;
 ### Events
 - `seek (time)`: Emitted when any "seek" method is called (seekTo, seekToProgress, skipForward, skipBackward).
 
+### Methods
+- `seekTo(time)`: seeks to a specific time (in seconds).
+- `seekToProgress(progress)`: seeks to a specific time (from 0 to 1).
+- `skipForward(secs)`: skips forward from the current time (in secs).
+- `skipBackward(secs)`: skips backward from the current time (in secs).
+- `play()`: plays the media element.
+- `pauses()`: pauses the media element.
+- `playPause()`: toggles play/pause.
+
 ### Slots
 - `default (scoped)`: with the following scoped props:
   - `paused`: Boolean that indicates if the video or audio is paused.
@@ -121,7 +130,7 @@ $primary: #4fc08d;
   - `skipBackward (s)`: Method to skip backward `s` seconds.
   - `seekingDisabled` (default false): Boolean to disabled any "seek" method is called (seekTo, seekToProgress, skipForward, skipBackward).
   - `mediaAttrs`: Object with the attributes ready for the `MediaElement` component.
-  - `cursorAttrs`: Object with the attributes ready for the `SeekSlider` component.
+  - `seekSliderAttrs`: Object with the attributes ready for the `SeekSlider` component.
 
 ## MediaElement
 
@@ -134,6 +143,8 @@ The following props are fully available, but `MediaManager` gives you all of the
 - `volume` (default 1): Number with the current volume (from 0 to 1).
 - `muted` (default false): Boolean to mute the audio.
 - `managerListeners` (required): Object with the corresponding `MediaManager`s listeners.
+- `forceTimeUpdateInterval` (optional): Number to indicate a time interval (milliseconds) to manually update the currentTime.
+  **Note:** If you use this option, the native `timeupdate` event will be ignored.
 
 Every other prop will be passed through to the correponding video or audio element, so you can use direclty `loop`, for example.
 - [MDN video tag documentation](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video)
@@ -144,13 +155,18 @@ Every other prop will be passed through to the correponding video or audio eleme
 Check the events provided by [HTMLMediaElement](https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement),
 [video](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/video) and [audio](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio).
 
+### Methods
+- `forceTimeUpdate()`: forces a time update for the currentTime.
+- `requestFullScreen()`: requests the native full screen mode for a video element.
+- `cancelFullScreen()`: cancels the native full screen mode.
+
 ### Slots
 - `default`: the native "slot" for a video or audio tag (ie: `<source>`).
 
 ## SeekSlider
 
 ### Props
-The following props are fully available, but `MediaManager` gives you all of them ready to use within `cursorAttrs`:
+The following props are fully available, but `MediaManager` gives you all of them ready to use within `seekSliderAttrs`:
 - `progress` (required): Number with current progress within the playback (from 0 to 1).
 - `paused` (default false): Boolean that indicates if the video or audio is paused.
 - `play` (optional): Method to play the video or audio.

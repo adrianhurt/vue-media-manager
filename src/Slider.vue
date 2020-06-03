@@ -75,13 +75,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$cursorColor: gray;
-$cursorPlayingColor: white;
-$cursorWidth: 8px;
-$cursorHeight: 24px;
+$sliderHeight: 24px;
+$trailHeight: 2px;
+$trailColor: #bbb;
+$handleSize: 12px;
+$handleColor: #888;
+$handleHoverColor: white;
 
 .Slider {
 	position: relative;
+	height: $sliderHeight;
 	user-select: none;
 	pointer-events: auto;
 	display: flex;
@@ -101,9 +104,9 @@ $cursorHeight: 24px;
 .DefaultTrail {
 	position: relative;
 	width: 100%;
-	height: 4px;
-	border-radius: 4px;
-	background-color: $cursorColor;
+	height: $trailHeight;
+	border-radius: $trailHeight;
+	background-color: $trailColor;
 }
 .Handle {
 	position: absolute;
@@ -117,15 +120,16 @@ $cursorHeight: 24px;
 	}
 }
 .DefaultHandle {
-	width: $cursorWidth;
-	height: $cursorHeight;
-	border-radius: $cursorWidth;
-	margin-left: -($cursorWidth / 2);
-	background-color: $cursorColor;
+	width: $handleSize;
+	height: $handleSize;
+	border-radius: $handleSize;
+	margin-top: #{-$handleSize / 2};
+	margin-left: -($handleSize / 2);
+	background-color: $handleColor;
 	transition: background-color 0.3s, transform 0.3s;
 	.playing &,
 	&:hover {
-		background-color: $cursorPlayingColor;
+		background-color: $handleHoverColor;
 	}
 	&:hover {
 		transform: scale(1.2);

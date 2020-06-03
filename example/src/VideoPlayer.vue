@@ -1,6 +1,6 @@
 <template>
     <MediaManager
-        #default="{ paused, playPause, currentTime, duration, progress, skipForward, skipBackward, mediaAttrs, cursorAttrs }"
+        #default="{ paused, playPause, currentTime, duration, progress, skipForward, skipBackward, mediaAttrs, seekSliderAttrs }"
         type="video"
         :seekingDisabled="seekingDisabled"
     >
@@ -24,7 +24,7 @@
                 <p class="info-text">
                     The SeekSlider: you can click wherever you want or drag it
                 </p>
-                <SeekSlider v-bind="cursorAttrs">
+                <SeekSlider v-bind="seekSliderAttrs">
                     <div class="SliderTrail" />
                     <div
                         slot="handle"
@@ -197,7 +197,7 @@ export default {
 @import '~@adrianhurt/vue-media-manager/dist/vue-media-manager.css';
 
 $width: 450px;
-$cursorHeight: 32px;
+$sliderHeight: 32px;
 $sliderTrailHeight: 2px;
 $handleSize: 12px;
 $primary: #4fc08d;
@@ -241,7 +241,7 @@ $secondary: #577392;
 	}
 }
 .SeekSlider {
-	height: $cursorHeight;
+	height: $sliderHeight;
 }
 .SliderTrail {
 	width: 100%;
@@ -282,7 +282,7 @@ $secondary: #577392;
 .VolumeSlider {
 	width: 200px;
 	margin: auto;
-	height: $cursorHeight;
+	height: $sliderHeight;
 }
 .VolumeHandle {
 	background-color: $secondary;

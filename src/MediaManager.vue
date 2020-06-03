@@ -28,7 +28,7 @@ export default {
                 managerListeners: this.mediaManagerListeners,
             }
         },
-        cursorAttrs () {
+        seekSliderAttrs () {
             return {
                 progress: this.progress,
                 paused: this.paused,
@@ -95,7 +95,7 @@ export default {
             skipBackward: this.skipBackward,
             seekingDisabled: this.seekingDisabled,
             mediaAttrs: this.mediaAttrs,
-            cursorAttrs: this.cursorAttrs,
+            seekSliderAttrs: this.seekSliderAttrs,
         })
     },
 }
