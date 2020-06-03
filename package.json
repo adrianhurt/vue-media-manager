@@ -1,15 +1,23 @@
 {
     "name": "@adrianhurt/vue-media-manager",
     "version": "0.1.1",
-    "description": "A canvas for a simple Vue package",
+    "description": "A simple way to use a HTML Media Element (video or audio) with your own custom controls.",
     "author": "adrianhurt",
     "license": "MIT",
     "keywords": [
-        "package",
         "vue",
         "vuejs",
-        "canvas"
+        "media",
+        "video",
+        "audio",
+        "mp4",
+        "mp3"
     ],
+    "homepage": "https://github.com/adrianhurt/vue-media-manager",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/adrianhurt/vue-media-manager"
+    },
     "main": "./dist/vue-media-manager.common.js",
     "scripts": {
         "clean": "rm -rf dist",
