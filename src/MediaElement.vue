@@ -73,7 +73,9 @@ export default {
         },
         forceTimeUpdateInterval (interval) {
             this._stopforceTimeUpdateInterval()
-            this._startforceTimeUpdateInterval(interval)
+            if (!this.paused) {
+                this._startforceTimeUpdateInterval(interval)
+            }
         },
     },
     mounted () {
@@ -83,9 +85,9 @@ export default {
         this.mediaRef.muted = this.muted
         if (this.autoplay) {
             this.autoplayNeedsToBeHandled = true
-        }
-        if (this.forceTimeUpdateInterval) {
-            this._startforceTimeUpdateInterval()
+            if (this.forceTimeUpdateInterval) {
+                this._startforceTimeUpdateInterval()
+            }
         }
     },
     beforeDestroy () {
@@ -109,6 +111,7 @@ export default {
         },
         _startforceTimeUpdateInterval (interval = this.forceTimeUpdateInterval) {
             if (this.forceTimeUpdateInterval) {
+                clearInterval(this.interval)
                 this.interval = setInterval(this.forceTimeUpdate, interval)
             }
         },
